@@ -58,12 +58,11 @@ class Mattress{
     }
 
     fullScrean() {
-        this.cnv.style.width = `100%`
+        this.cnv.style.width = `97%`
         this.cnv.width = window.innerWidth
-        this.cnv.style.height = `100%`
+        this.cnv.style.height = `89%`
         this.cnv.height = window.innerHeight
         this.cnv.style.position = "absolute"
-        this.cnv.style.border = "0"
     }
 
     collide(objA, objB) {
