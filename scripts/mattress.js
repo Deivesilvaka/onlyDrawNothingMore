@@ -60,7 +60,7 @@ class Mattress{
     fullScrean() {
         this.cnv.style.width = `97%`
         this.cnv.width = window.innerWidth
-        this.cnv.style.height = `89%`
+        this.cnv.style.height = `85%`
         this.cnv.height = window.innerHeight
         this.cnv.style.position = "absolute"
     }

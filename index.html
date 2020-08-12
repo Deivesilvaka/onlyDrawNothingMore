@@ -17,27 +17,60 @@
         mattress.center()
 
         const pensil = {
+            color:"#000000",
             activated: false,
             moving:false,
             before: null,
             after: {x: 0, y: 0}
         }
 
+        const rubber = {
+            color:pensil.color,
+            activated: false,
+            moving:false,
+            before: null,
+            after: {x: 0, y: 0}
+        }
+
+        const USE = {
+            pensil: true,
+            rubber:false
+        }
+
         ctx.lineWidth = 2
 
-        mattress.cnv.onmousedown = () => { pensil.activated = true }
-        mattress.cnv.onmouseup = () => { pensil.activated = false }
+        mattress.cnv.onmousedown = () => {
+            if(USE.pensil){
+                pensil.activated = true
+            }else{
+                rubber.activated = true
+            }
+        }
+        mattress.cnv.onmouseup = () => {
+            if(USE.pensil){
+                pensil.activated = false
+            }else{
+                rubber.activated = false
+            }
+        }
 
         mattress.cnv.onmousemove = (event) => {
-            pensil.after.x = event.clientX
-            pensil.after.y = event.clientY
-            pensil.moving = true
+            if(USE.pensil){
+                pensil.after.x = event.clientX
+                pensil.after.y = event.clientY
+                pensil.moving = true
+            }else{
+                rubber.after.x = event.clientX
+                rubber.after.y = event.clientY
+                rubber.moving = true
+            }
         }
 
         function drawLine(pointsPositions) {
 
             const lines = pointsPositions
 
+            ctx.strokeStyle = pensil.color
             ctx.beginPath()
             ctx.moveTo(lines.before.x,lines.before.y)
             ctx.lineTo(lines.after.x, lines.after.y)
@@ -46,15 +79,31 @@
 
         function clearCanvas() {
             mattress.clear()
+            mattress.cnv.style.background = "#ffffff"
+        }
+
+        function clearUseRubber(pointsPositions) {
+            const lines = pointsPositions
+            ctx.clearRect(lines.before.x-15,lines.before.y-15, 30, 30)
         }
 
         function ciclo() {
+
             if(pensil.moving && pensil.activated && pensil.before){
                 drawLine({after:pensil.after, before:pensil.before})
                 pensil.moving = false
+            }else{
+                if(rubber.moving && rubber.activated && pensil.before){
+                    clearUseRubber({after:rubber.after, before:rubber.before})
+                    rubber.moving = false
+                }
             }
 
-            pensil.before = {...pensil.after}
+            if(USE.pensil){
+                pensil.before = {...pensil.after}
+            }else{
+                rubber.before = {...rubber.after}
+            }
 
             setTimeout(ciclo, 10)
 
@@ -65,11 +114,63 @@
         requestAnimationFrame(() => {
             mattress.fullScrean()
         })
+
+        function changeColor() {
+            pensil.color = document.querySelector("#paintColor").value
+        }
+
+        function changeLineWidth(){
+            if(document.querySelector("#pensilLine").value > 0 && document.querySelector("#pensilLine").value < 11){
+                ctx.lineWidth = parseInt(document.querySelector("#pensilLine").value)
+            }
+        }
+
+        function changeOpacity(){
+            if(document.querySelector("#opacity").value > -1 && document.querySelector("#opacity").value < 101){
+                ctx.globalAlpha = parseInt(document.querySelector("#opacity").value)/100
+            }
+        }
+
+        function backCanvas() {
+            mattress.cnv.style.background = document.querySelector("#paintBucket").value
+        }
+
+        function selectUse(item) {
+            if(item === "p"){
+                USE.pensil = true
+                USE.rubber = false
+                document.querySelector("#Pensil").style.background = "green"
+                document.querySelector("#Rubber").style.background = "grey"
+            }else{
+                USE.rubber = true
+                USE.pensil = false
+                document.querySelector("#Pensil").style.background = "grey"
+                document.querySelector("#Rubber").style.background = "green"
+            }
+        }
         
 
     </script>
 
-    <center><button onclick="clearCanvas()">CLEAR CANVAS</button></center>
+    <center>
+
+        <label>
+            <button id="Pensil" style="background: green;" onclick="selectUse('p')">Pensil</button>
+            <button id="Rubber" style="background: grey;" onclick="selectUse('r')">Rubber</button>
+        </label>
+
+        <label>
+            <strong>:pensil:---</strong>Color:<input type="color" id="paintColor" onchange="changeColor()">
+            Size: <input type="number" min="1" max="10" value="2" style="width:35px;" id="pensilLine" onchange="changeLineWidth()">
+            transparency: <input type="number" id="opacity" min="0" max="100" style="width:50px;" value="100" onchange="changeOpacity()">
+        </label>
+
+        <label>
+           paint bucket: <input type="color" value="#ffffff" id="paintBucket" onchange="backCanvas()">
+        </label>
+
+        <button onclick="clearCanvas()">CLEAR CANVAS</button>
+    </center>
 
 </body>
 </html>
