@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Only draw, nothing more</title>
+</head>
+<body>
+    <script src="script/mattress.js"></script>
+
+    <script>
+
+        const mattress = new Mattress()
+
+        const ctx = mattress.createCanvas(1250, 550)
+        mattress.defineBorder()
+        mattress.center()
+
+        const pensil = {
+            activated: false,
+            moving:false,
+            before: null,
+            after: {x: 0, y: 0}
+        }
+
+        ctx.lineWidth = 2
+
+        mattress.cnv.onmousedown = () => { pensil.activated = true }
+        mattress.cnv.onmouseup = () => { pensil.activated = false }
+
+        mattress.cnv.onmousemove = (event) => {
+            pensil.after.x = event.clientX
+            pensil.after.y = event.clientY
+            pensil.moving = true
+        }
+
+        function drawLine(pointsPositions) {
+
+            const lines = pointsPositions
+
+            ctx.beginPath()
+            ctx.moveTo(lines.before.x,lines.before.y)
+            ctx.lineTo(lines.after.x, lines.after.y)
+            ctx.stroke()
+        }
+
+        function clearCanvas() {
+            mattress.clear()
+        }
+
+        function ciclo() {
+            if(pensil.moving && pensil.activated && pensil.before){
+                drawLine({after:pensil.after, before:pensil.before})
+                pensil.moving = false
+            }
+
+            pensil.before = {...pensil.after}
+
+            setTimeout(ciclo, 10)
+
+        }
+
+        ciclo()
+        
+
+    </script>
+
+    <center><button onclick="clearCanvas()">CLEAR CANVAS</button></center>
+
+</body>
+</html>
