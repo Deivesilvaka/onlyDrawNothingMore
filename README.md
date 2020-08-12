@@ -1,4 +1,4 @@
-# onlyDrawNothingMore
+# Only draw nothing more
 Only draw
 
 "Only draw, nothing more" é uma projeto publicado no github pages. Uma espécie de Paint só que um bilhão de vezes "melhor".
